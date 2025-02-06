@@ -1,11 +1,11 @@
 package com.example.security.controller;
 
+import com.example.security.payload.SignupRequest;
+import com.example.security.payload.LoginRequest;
+import com.example.security.payload.JwtResponse;
+import com.example.security.payload.ApiResponse;
 import com.example.security.entity.Role;
 import com.example.security.entity.User;
-import com.example.security.payload.ApiResponse;
-import com.example.security.payload.JwtResponse;
-import com.example.security.payload.LoginRequest;
-import com.example.security.payload.SignupRequest;
 import com.example.security.repository.RoleRepository;
 import com.example.security.repository.UserRepository;
 import com.example.security.security.JwtTokenProvider;
