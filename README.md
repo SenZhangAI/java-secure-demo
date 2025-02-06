@@ -178,7 +178,7 @@ curl -X GET http://localhost:8080/api/auth/user/info \
 ```yaml
 spring:
     datasource:
-        url: jdbc:mysql://localhost:3306/security_demo
+        url: jdbc:mysql://localhost:3307/security_demo?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
         username: root
         password: root
 ```

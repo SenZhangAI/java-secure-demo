@@ -3,19 +3,24 @@ server:
 
 spring:
     datasource:
-        url: jdbc:mysql://localhost:3306/security_demo?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+        url: jdbc:mysql://localhost:3307/security_demo?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
         username: root
         password: root
         driver-class-name: com.mysql.cj.jdbc.Driver
 
     jpa:
         hibernate:
-            ddl-auto: update
+            ddl-auto: none
         show-sql: true
         properties:
             hibernate:
                 format_sql: true
                 dialect: org.hibernate.dialect.MySQL8Dialect
+        defer-datasource-initialization: true
+
+    sql:
+        init:
+            mode: always
 
 jwt:
     secret: your-secret-key
