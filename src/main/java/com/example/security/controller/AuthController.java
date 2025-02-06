@@ -48,8 +48,8 @@ public class AuthController {
 
     @ApiOperation(value = "用户登录", notes = "使用用户名和密码进行登录")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "登录成功"),
-            @ApiResponse(code = 401, message = "用户名或密码错误")
+            @io.swagger.annotations.ApiResponse(code = 200, message = "登录成功"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "用户名或密码错误")
     })
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
