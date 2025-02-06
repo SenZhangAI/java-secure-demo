@@ -75,8 +75,8 @@ public class AuthController {
 
     @ApiOperation(value = "用户注册", notes = "注册新用户")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "注册成功"),
-            @ApiResponse(code = 400, message = "用户名或邮箱已存在")
+            @io.swagger.annotations.ApiResponse(code = 200, message = "注册成功"),
+            @io.swagger.annotations.ApiResponse(code = 400, message = "用户名或邮箱已存在")
     })
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
