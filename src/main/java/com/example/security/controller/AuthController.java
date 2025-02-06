@@ -10,8 +10,6 @@ import com.example.security.repository.RoleRepository;
 import com.example.security.repository.UserRepository;
 import com.example.security.security.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -51,10 +49,6 @@ public class AuthController {
     private JwtTokenProvider tokenProvider;
 
     @Operation(summary = "用户登录", description = "使用用户名和密码进行登录")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "登录成功"),
-            @ApiResponse(responseCode = "401", description = "用户名或密码错误")
-    })
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -78,10 +72,6 @@ public class AuthController {
     }
 
     @Operation(summary = "用户注册", description = "注册新用户")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "注册成功"),
-            @ApiResponse(responseCode = "400", description = "用户名或邮箱已存在")
-    })
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
@@ -113,10 +103,6 @@ public class AuthController {
     }
 
     @Operation(summary = "获取用户信息", description = "获取当前登录用户的详细信息")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "获取成功"),
-            @ApiResponse(responseCode = "401", description = "未登录")
-    })
     @GetMapping("/user/info")
     public ResponseEntity<?> getUserInfo() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()

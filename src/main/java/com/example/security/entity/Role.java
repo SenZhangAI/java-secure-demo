@@ -3,9 +3,9 @@ package com.example.security.entity;
 import lombok.Data;
 import javax.persistence.*;
 
-@Data
 @Entity
 @Table(name = "roles")
+@Data
 public class Role {
 
     @Id
