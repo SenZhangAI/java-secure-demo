@@ -9,6 +9,7 @@ import com.example.security.payload.SignupRequest;
 import com.example.security.repository.RoleRepository;
 import com.example.security.repository.UserRepository;
 import com.example.security.security.JwtTokenProvider;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*", maxAge = 3600)
+@Api(tags = "认证管理")
 public class AuthController {
 
     @Autowired
@@ -44,6 +46,11 @@ public class AuthController {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
+    @ApiOperation(value = "用户登录", notes = "使用用户名和密码进行登录")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "登录成功"),
+            @ApiResponse(code = 401, message = "用户名或密码错误")
+    })
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -66,6 +73,11 @@ public class AuthController {
                 roles));
     }
 
+    @ApiOperation(value = "用户注册", notes = "注册新用户")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "注册成功"),
+            @ApiResponse(code = 400, message = "用户名或邮箱已存在")
+    })
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
