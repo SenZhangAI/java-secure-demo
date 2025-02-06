@@ -141,7 +141,7 @@ mvn spring-boot:run
 启动应用后，访问 Swagger 文档：
 
 ```
-http://localhost:8080/swagger-ui/
+http://localhost:8080/swagger-ui.html
 ```
 
 ### 测试接口

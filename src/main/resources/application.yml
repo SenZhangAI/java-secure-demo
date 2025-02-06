@@ -7,9 +7,6 @@ spring:
         username: root
         password: root
         driver-class-name: com.mysql.cj.jdbc.Driver
-        mvc:
-            pathmatch:
-                matching-strategy: ant_path_matcher
 
     jpa:
         hibernate:
@@ -25,6 +22,13 @@ spring:
         init:
             mode: always
             continue-on-error: true
+
+    springdoc:
+        api-docs:
+            path: /v3/api-docs
+        swagger-ui:
+            path: /swagger-ui.html
+        packages-to-scan: com.example.security.controller
 
 jwt:
     secret: your-secret-key
