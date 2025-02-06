@@ -82,3 +82,47 @@
     - 公共接口测试
     - 用户接口测试
     - 管理员接口测试
+
+## 快速开始
+
+1. 环境要求
+
+    - JDK 8+
+    - Maven 3.6+
+    - MySQL 5.7+
+
+2. 数据库配置
+
+    - 创建数据库：security_demo
+    - 更新 application.yml 中的数据库配置
+
+3. 运行项目
+
+    ```bash
+    mvn spring-boot:run
+    ```
+
+4. 测试接口
+    - 访问 Swagger 文档：http://localhost:8080/swagger-ui/
+    - 默认测试账号：
+        - 普通用户：user/password
+        - 管理员：admin/password
+
+## 主要功能
+
+1. 认证功能
+
+    - 基于 JWT 的 Token 认证
+    - 用户名密码登录
+    - 注册新用户
+
+2. 授权功能
+
+    - 基于角色的权限控制
+    - URL 级别的访问控制
+    - 方法级别的安全注解
+
+3. 安全特性
+    - 密码加密存储
+    - Token 过期控制
+    - 全局异常处理
