@@ -33,8 +33,8 @@
 
 4. 创建认证控制器 🚧
 
-    - AuthController 处理注册登录
-    - UserController 测试权限控制
+    - AuthController 处理注册登录 ✅
+    - UserController 测试权限控制 ✅
 
 5. 实现 JWT 过滤器 ✅
 
@@ -59,7 +59,7 @@
     - 添加角色权限控制
     - 测试用例编写
 
-3. 补充异常处理
+3. 补充异常处理 ✅
 
     - 创建全局异常处理器
     - 自定义业务异常
