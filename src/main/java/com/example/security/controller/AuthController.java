@@ -17,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -106,5 +107,25 @@ public class AuthController {
         userRepository.save(user);
 
         return ResponseEntity.ok(new ApiResponse(true, "用户注册成功"));
+    }
+
+    @ApiOperation(value = "获取用户信息", notes = "获取当前登录用户的详细信息")
+    @ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "获取成功"),
+            @io.swagger.annotations.ApiResponse(code = 401, message = "未登录")
+    })
+    @GetMapping("/user/info")
+    public ResponseEntity<?> getUserInfo() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("未找到用户"));
+
+        return ResponseEntity.ok(new ApiResponse(true, "获取成功",
+                new JwtResponse(null, user.getId(), user.getUsername(),
+                        user.getEmail(), user.getRoles().stream()
+                                .map(Role::getName)
+                                .collect(Collectors.toList()))));
     }
 }
