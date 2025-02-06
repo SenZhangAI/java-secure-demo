@@ -9,7 +9,10 @@ import com.example.security.payload.SignupRequest;
 import com.example.security.repository.RoleRepository;
 import com.example.security.repository.UserRepository;
 import com.example.security.security.JwtTokenProvider;
-import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,7 +32,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*", maxAge = 3600)
-@Api(tags = "认证管理")
+@Tag(name = "认证管理")
 public class AuthController {
 
     @Autowired
@@ -47,10 +50,10 @@ public class AuthController {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
-    @ApiOperation(value = "用户登录", notes = "使用用户名和密码进行登录")
+    @Operation(summary = "用户登录", description = "使用用户名和密码进行登录")
     @ApiResponses(value = {
-            @io.swagger.annotations.ApiResponse(code = 200, message = "登录成功"),
-            @io.swagger.annotations.ApiResponse(code = 401, message = "用户名或密码错误")
+            @ApiResponse(responseCode = "200", description = "登录成功"),
+            @ApiResponse(responseCode = "401", description = "用户名或密码错误")
     })
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -74,10 +77,10 @@ public class AuthController {
                 roles));
     }
 
-    @ApiOperation(value = "用户注册", notes = "注册新用户")
+    @Operation(summary = "用户注册", description = "注册新用户")
     @ApiResponses(value = {
-            @io.swagger.annotations.ApiResponse(code = 200, message = "注册成功"),
-            @io.swagger.annotations.ApiResponse(code = 400, message = "用户名或邮箱已存在")
+            @ApiResponse(responseCode = "200", description = "注册成功"),
+            @ApiResponse(responseCode = "400", description = "用户名或邮箱已存在")
     })
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
@@ -109,10 +112,10 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse(true, "用户注册成功"));
     }
 
-    @ApiOperation(value = "获取用户信息", notes = "获取当前登录用户的详细信息")
+    @Operation(summary = "获取用户信息", description = "获取当前登录用户的详细信息")
     @ApiResponses(value = {
-            @io.swagger.annotations.ApiResponse(code = 200, message = "获取成功"),
-            @io.swagger.annotations.ApiResponse(code = 401, message = "未登录")
+            @ApiResponse(responseCode = "200", description = "获取成功"),
+            @ApiResponse(responseCode = "401", description = "未登录")
     })
     @GetMapping("/user/info")
     public ResponseEntity<?> getUserInfo() {
