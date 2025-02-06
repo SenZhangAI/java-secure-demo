@@ -21,6 +21,7 @@ spring:
     sql:
         init:
             mode: always
+            platform: mysql
             continue-on-error: true
 
     springdoc:
