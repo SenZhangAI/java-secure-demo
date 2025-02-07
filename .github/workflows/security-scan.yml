@@ -19,7 +19,7 @@ jobs:
                   cache: maven
 
             - name: Initialize CodeQL
-              uses: github/codeql-action/init@v2
+              uses: github/codeql-action/init@v3
               with:
                   languages: java
 
@@ -27,7 +27,7 @@ jobs:
               run: mvn -B package --file pom.xml
 
             - name: Perform CodeQL Analysis
-              uses: github/codeql-action/analyze@v2
+              uses: github/codeql-action/analyze@v3
 
             - name: Run OWASP Dependency Check
               run: mvn org.owasp:dependency-check-maven:check
