@@ -6,6 +6,11 @@ server:
             cookie:
                 http-only: true # 防止XSS访问cookie
                 same-site: strict # 防止CSRF
+    error:
+        whitelabel:
+            enabled: false
+        include-stacktrace: never
+        include-message: always
 
 spring:
     datasource:
