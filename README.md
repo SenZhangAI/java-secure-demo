@@ -269,7 +269,22 @@ mvn test
 -   [x] 敏感数据保护
     -   [x] 数据脱敏（用户名、邮箱、手机号等）
     -   [x] 敏感信息加密存储
-    -   [ ] 传输加密
+    -   [x] 文件上传安全
+        -   [x] 文件类型验证
+            - 支持的文件类型：jpg、jpeg、png、pdf、doc、docx、xls、xlsx
+            - 双重验证：扩展名和Content-Type
+        -   [x] 文件大小限制
+            - 单文件最大 10MB
+            - 请求最大 10MB
+        -   [x] 文件存储安全
+            - 使用 UUID 重命名文件
+            - 安全的存储路径
+        -   [x] 文件名安全处理
+            - 文件名净化
+            - 特殊字符替换
+        -   [x] 上传权限控制
+            - 需要用户认证
+            - 操作审计日志
 -   [x] 日志安全 ✅
     -   [x] 安全审计日志
     -   实现了 AuditLog 注解和 AuditLogAspect
@@ -331,29 +346,46 @@ public class User {
 
 ### 待实现
 
-1. 文件上传安全
+1. HTTP 安全头配置
+    - [ ] X-Frame-Options
+    - [ ] X-Content-Type-Options
+    - [ ] X-XSS-Protection
 
-    - [ ] 文件类型验证
-    - [ ] 文件大小限制
-    - [ ] 文件存储安全
-    - [ ] 文件名安全处理
-    - [ ] 防病毒扫描
+2. 错误信息处理
+    - [ ] 自定义错误页面
+    - [ ] 生产环境错误处理
 
-2. 其他安全措施
-    - [ ] HTTP 安全头配置
-        - [ ] X-Frame-Options
-        - [ ] X-Content-Type-Options
-        - [ ] X-XSS-Protection
-    - [ ] 错误信息处理
-        - [ ] 自定义错误页面
-        - [ ] 生产环境错误处理
-    - [ ] 依赖包安全检查
-        - [ ] Maven 依赖版本检查
-        - [ ] 已知漏洞扫描
-    - [ ] 定期安全扫描
-        - [ ] 代码质量扫描
-        - [ ] 安全漏洞扫描
-        - [ ] 渗透测试
+3. 依赖包安全检查
+    - [ ] Maven 依赖版本检查
+    - [ ] 已知漏洞扫描
+
+4. 定期安全扫描
+    - [ ] 代码质量扫描
+    - [ ] 安全漏洞扫描
+    - [ ] 渗透测试
+
+### 文件上传使用说明
+
+1. 接口说明
+```bash
+POST /api/files/upload
+Content-Type: multipart/form-data
+Authorization: Bearer {token}
+```
+
+2. 安全特性
+- 文件类型白名单
+- 文件大小限制
+- 文件名安全处理
+- 存储路径保护
+- 上传审计日志
+
+3. 使用示例
+```bash
+curl -X POST http://localhost:8080/api/files/upload \
+  -H "Authorization: Bearer {your_token}" \
+  -F "file=@example.jpg"
+```
 
 ### 下一步计划
 
