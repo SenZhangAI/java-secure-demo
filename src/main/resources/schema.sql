@@ -4,22 +4,25 @@
 
 CREATE TABLE IF NOT EXISTS roles (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(60) NOT NULL UNIQUE
+    name VARCHAR(60) NOT NULL,
+    UNIQUE INDEX idx_role_name (name)
 );
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    email VARCHAR(120) NOT NULL UNIQUE,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(120) NOT NULL,
     password VARCHAR(120) NOT NULL,
     password_last_changed TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    password_expired BOOLEAN DEFAULT FALSE
+    password_expired BOOLEAN DEFAULT FALSE,
+    UNIQUE INDEX idx_user_username (username),
+    UNIQUE INDEX idx_user_email (email)
 );
 
 CREATE TABLE IF NOT EXISTS user_roles (
     user_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL,
     PRIMARY KEY (user_id, role_id),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+    INDEX idx_user_roles_user_id (user_id),
+    INDEX idx_user_roles_role_id (role_id)
 ); 
