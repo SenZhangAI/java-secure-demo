@@ -1,5 +1,6 @@
 package com.example.security.config;
 
+import org.springframework.stereotype.Component;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.filter.OncePerRequestFilter;
 import javax.servlet.FilterChain;
@@ -8,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Component
 public class CsrfTokenFilter extends OncePerRequestFilter {
 
     @Override
