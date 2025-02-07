@@ -4,6 +4,8 @@ import lombok.Data;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Set;
+import com.example.security.annotation.Sensitive;
+import com.example.security.annotation.SensitiveStrategy;
 
 @Data
 @Entity
@@ -15,10 +17,20 @@ public class User {
     private Long id;
 
     @Column(unique = true)
+    @Sensitive(strategy = SensitiveStrategy.USERNAME)
     private String username;
 
     @Column(unique = true)
+    @Sensitive(strategy = SensitiveStrategy.EMAIL)
     private String email;
+
+    @Column(name = "phone")
+    @Sensitive(strategy = SensitiveStrategy.PHONE)
+    private String phone;
+
+    @Column(name = "id_card")
+    @Sensitive(strategy = SensitiveStrategy.ID_CARD)
+    private String idCard;
 
     private String password;
 

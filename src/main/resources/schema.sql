@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) NOT NULL,
     email VARCHAR(120) NOT NULL,
     password VARCHAR(120) NOT NULL,
+    phone VARCHAR(20),
+    id_card VARCHAR(50),
     password_last_changed TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     password_expired BOOLEAN DEFAULT FALSE,
     UNIQUE INDEX idx_user_username (username),
