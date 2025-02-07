@@ -31,13 +31,7 @@ import com.example.security.filter.RateLimitFilter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
-
-    @Autowired
     private CustomUserDetailsService customUserDetailsService;
-
-    @Autowired
-    private UserDetailsService userDetailsService;
 
     @Autowired
     private CsrfTokenFilter csrfTokenFilter;

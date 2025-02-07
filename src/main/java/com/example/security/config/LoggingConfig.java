@@ -48,7 +48,7 @@ public class LoggingConfig {
             @Override
             public FilterReply decide(ILoggingEvent event) {
                 try {
-                    String signature = calculateSignature(event.getFormattedMessage());
+                    calculateSignature(event.getFormattedMessage());
                     return FilterReply.ACCEPT;
                 } catch (Exception e) {
                     return FilterReply.DENY;

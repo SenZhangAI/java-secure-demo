@@ -18,22 +18,24 @@ public class SensitiveSerializer extends JsonSerializer<String> implements Conte
 
     @Override
     public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        if (Objects.isNull(value) || strategy == null) {
-            gen.writeString(value);
+        if (value == null) {
+            gen.writeNull();
             return;
         }
-        gen.writeString(strategy.getDesensitizer().apply(value));
+        gen.writeString(strategy != null ? strategy.desensitize(value) : value);
     }
 
     @Override
     public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property)
             throws JsonMappingException {
-        if (property != null) {
-            Sensitive annotation = property.getAnnotation(Sensitive.class);
-            if (annotation != null) {
-                this.strategy = annotation.strategy();
-                return this;
-            }
+        if (property == null) {
+            return prov.findNullValueSerializer(null);
+        }
+
+        Sensitive sensitive = property.getAnnotation(Sensitive.class);
+        if (sensitive != null) {
+            this.strategy = sensitive.strategy();
+            return this;
         }
         return prov.findValueSerializer(property.getType(), property);
     }

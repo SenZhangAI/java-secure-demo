@@ -51,7 +51,7 @@ public enum SensitiveStrategy {
         this.desensitizer = desensitizer;
     }
 
-    public Function<String, String> getDesensitizer() {
-        return desensitizer;
+    public String desensitize(String value) {
+        return desensitizer.apply(value);
     }
 }
