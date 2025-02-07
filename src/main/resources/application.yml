@@ -1,5 +1,11 @@
 server:
     port: 8080
+    servlet:
+        session:
+            timeout: 30m # 会话超时时间
+            cookie:
+                http-only: true # 防止XSS访问cookie
+                same-site: strict # 防止CSRF
 
 spring:
     datasource:
@@ -40,6 +46,12 @@ spring:
         swagger-ui:
             path: /swagger-ui.html
         packages-to-scan: com.example.security.controller
+
+    security:
+        session:
+            concurrency-control:
+                max-sessions: 1
+                error-if-maximum-exceeded: true
 
 jwt:
     secret: your-secret-key

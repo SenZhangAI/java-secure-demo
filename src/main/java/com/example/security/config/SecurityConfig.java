@@ -18,6 +18,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @Configuration
 @EnableWebSecurity
@@ -53,11 +56,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .contentSecurityPolicy("default-src 'self'")
                 .and()
+                .frameOptions().deny()
                 .and()
                 .cors()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .maximumSessions(1)
+                .maxSessionsPreventsLogin(true)
+                .expiredUrl("/login?expired")
+                .sessionRegistry(sessionRegistry())
+                .and()
+                .sessionFixation()
+                .migrateSession()
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/auth/**").permitAll()
@@ -84,5 +95,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
+    }
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
+
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
     }
 }

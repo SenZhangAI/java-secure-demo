@@ -13,6 +13,8 @@ import com.example.security.validator.PasswordValidator;
 import com.example.security.service.LoginAttemptService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,6 +38,8 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @Tag(name = "认证管理")
 public class AuthController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -63,22 +67,28 @@ public class AuthController {
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
             HttpServletRequest request) {
         String ip = request.getRemoteAddr();
+        logger.info("尝试登录用户: {}", loginRequest.getUsername());
 
         if (loginAttemptService.isBlocked(ip)) {
+            logger.warn("IP {} 已被锁定", ip);
             return ResponseEntity.badRequest()
                     .body(new ApiResponse(false, "账户已被锁定，请1小时后重试"));
         }
 
         try {
+            // 先检查用户是否存在
+            User user = userRepository.findByUsername(loginRequest.getUsername())
+                    .orElseThrow(() -> new RuntimeException("用户不存在"));
+
+            logger.info("找到用户: {}, 密码哈希: {}", user.getUsername(), user.getPassword());
+
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getUsername(),
                             loginRequest.getPassword()));
 
-            User user = userRepository.findByUsername(loginRequest.getUsername())
-                    .orElseThrow(() -> new RuntimeException("用户不存在"));
-
             if (user.isPasswordExpired()) {
+                logger.warn("用户 {} 密码已过期", user.getUsername());
                 return ResponseEntity.badRequest()
                         .body(new ApiResponse(false, "密码已过期，请修改密码"));
             }
@@ -91,14 +101,17 @@ public class AuthController {
                     .map(Role::getName)
                     .collect(Collectors.toList());
 
+            logger.info("用户 {} 登录成功", user.getUsername());
             return ResponseEntity.ok(new JwtResponse(jwt,
                     user.getId(),
                     user.getUsername(),
                     user.getEmail(),
                     roles));
         } catch (AuthenticationException e) {
+            logger.error("用户 {} 认证失败: {}", loginRequest.getUsername(), e.getMessage());
             loginAttemptService.loginFailed(ip);
-            throw e;
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse(false, "用户名或密码错误"));
         }
     }
 
