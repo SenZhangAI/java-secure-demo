@@ -124,24 +124,29 @@ http://localhost:8080/swagger-ui.html
 1. 获取验证码
 
 ```bash
-# 获取验证码图片（返回base64编码的图片数据）
-curl -X GET http://localhost:8080/api/captcha
+# 获取验证码并保存 cookie（重要：保持会话）
+curl -X GET http://localhost:8080/api/captcha -c cookies.txt
 
 # 返回示例：
 {
     "success": true,
     "message": "获取验证码成功",
-    "data": "data:image/png;base64,/9j/4AAQSkZJRg..."  # 这是一个base64编码的图片
+    "data": "data:image/png;base64,/9j/4AAQSkZJRg..."
 }
 
-# 在浏览器中查看验证码
-# 1. 复制返回的 data 字段值
-# 2. 在浏览器新标签页粘贴即可看到验证码图片
+# 查看验证码方法：
+# 方法1：使用浏览器
+# 1. 复制 data 字段的完整值（包含 data:image/png;base64, 前缀）
+# 2. 在浏览器新标签页粘贴地址栏即可看到验证码图片
+
+# 方法2：使用命令行（Linux/Mac）
+echo "返回的 base64 内容" | base64 -d > captcha.png
 ```
 
 2. 注册新用户
 
 ```bash
+# 注册新用户（密码需要符合强度要求）
 curl -X POST http://localhost:8080/api/auth/signup \
   -H "Content-Type: application/json" \
   -d '{
@@ -149,26 +154,41 @@ curl -X POST http://localhost:8080/api/auth/signup \
     "email":"test@example.com",
     "password":"Password@123"
   }'
+
+# 密码要求：
+# - 至少8个字符
+# - 至少1个数字
+# - 至少1个小写字母
+# - 至少1个大写字母
+# - 至少1个特殊字符(@#$%^&+=)
+# - 不能包含空格
 ```
 
 3. 用户登录（需要验证码）
 
 ```bash
-# 1. 先获取验证码（使用上面的验证码接口）
-# 2. 查看验证码图片并记住验证码内容
-# 3. 使用验证码进行登录
+# 1. 先获取新的验证码（使用上面的验证码接口）
+curl -X GET http://localhost:8080/api/captcha -c cookies.txt
+
+# 2. 查看验证码内容（使用上述方法之一）
+
+# 3. 使用验证码登录（使用相同的 cookies 文件）
 curl -X POST http://localhost:8080/api/auth/login \
+  -b cookies.txt \
   -H "Content-Type: application/json" \
   -d '{
     "username":"testuser",
     "password":"Password@123",
-    "captcha":"1234"  # 这里填写你看到的验证码内容
+    "captcha":"XXXX"  # 替换为实际看到的验证码
   }'
+
+# 登录成功后会返回 JWT token，保存此 token 用于后续请求
 ```
 
 4. 获取用户信息（需要 token）
 
 ```bash
+# 使用登录返回的 token
 curl -X GET http://localhost:8080/api/auth/user/info \
   -H "Authorization: Bearer {your_token}"
 ```
@@ -179,6 +199,21 @@ curl -X GET http://localhost:8080/api/auth/user/info \
 -   验证码区分大小写
 -   验证码使用后立即失效
 -   如果输入错误的验证码，需要重新获取新的验证码
+-   必须使用相同的会话（cookie）才能验证成功
+-   每次登录尝试都需要重新获取验证码
+
+### 常见问题
+
+1. 验证码错误：
+
+    - 确保使用最新获取的验证码
+    - 确保使用了相同的 cookie
+    - 验证码区分大小写，注意输入准确
+
+2. 登录失败：
+    - 检查用户名和密码是否正确
+    - 确认验证码是否在有效期内
+    - 确认是否使用了正确的 cookie
 
 ## 开发说明
 
