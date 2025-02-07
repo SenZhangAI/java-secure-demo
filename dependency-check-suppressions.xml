@@ -3,12 +3,14 @@
     <!-- Spring Boot 相关漏洞 -->
     <suppress>
         <notes>暂时保持 Spring Boot 2.6.7 版本，等待整体升级计划</notes>
+        <filePath regex="true">.*spring-boot.*2\.6\.7\.jar</filePath>
         <cve>CVE-2023-20873</cve>
     </suppress>
 
     <!-- Spring Security 相关漏洞 -->
     <suppress>
         <notes>Spring Security 漏洞，需要整体升级</notes>
+        <filePath regex="true">.*spring-security.*\.jar</filePath>
         <cve>CVE-2022-31690</cve>
         <cve>CVE-2023-34034</cve>
         <cve>CVE-2022-22978</cve>
@@ -20,6 +22,7 @@
     <!-- Spring Web 相关漏洞 -->
     <suppress>
         <notes>Spring Web 漏洞，需要整体升级</notes>
+        <filePath regex="true">.*spring-web.*\.jar</filePath>
         <cve>CVE-2024-22262</cve>
         <cve>CVE-2024-38809</cve>
         <cve>CVE-2024-22243</cve>
@@ -27,9 +30,10 @@
         <cve>CVE-2024-38816</cve>
     </suppress>
 
-    <!-- Hutool 相关漏洞 - 仍需保留，因为还在使用 5.8.20 版本 -->
+    <!-- Hutool 相关漏洞 -->
     <suppress>
         <notes>Hutool 漏洞，等待新版本修复</notes>
+        <filePath regex="true">.*hutool.*\.jar</filePath>
         <cve>CVE-2023-24163</cve>
         <cve>CVE-2023-42276</cve>
         <cve>CVE-2023-42277</cve>
@@ -45,5 +49,12 @@
     <suppress>
         <notes>Hibernate Validator 6.2.0.Final 的漏洞，建议升级到 6.2.5.Final</notes>
         <cve>CVE-2023-5763</cve>
+    </suppress>
+
+    <!-- SnakeYAML 相关漏洞 -->
+    <suppress>
+        <notes>SnakeYAML 是 Spring Boot 的传递依赖，我们的代码中未直接使用，且已改用 properties 格式配置</notes>
+        <filePath regex="true">.*snakeyaml.*\.jar</filePath>
+        <cve>CVE-2022-1471</cve>
     </suppress>
 </suppressions> 
