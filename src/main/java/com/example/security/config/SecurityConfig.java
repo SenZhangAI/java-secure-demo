@@ -21,6 +21,9 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.security.service.RateLimitService;
+import com.example.security.filter.RateLimitFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -38,6 +41,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private CsrfTokenFilter csrfTokenFilter;
+
+    @Autowired
+    private RateLimitService rateLimitService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Bean
     public JwtAuthenticationFilter authenticationJwtTokenFilter() {
@@ -77,6 +86,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(csrfTokenFilter, JwtAuthenticationFilter.class);
+        http.addFilterBefore(new RateLimitFilter(rateLimitService, objectMapper),
+                UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
