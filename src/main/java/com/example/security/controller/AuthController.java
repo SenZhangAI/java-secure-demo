@@ -11,6 +11,7 @@ import com.example.security.repository.UserRepository;
 import com.example.security.security.JwtTokenProvider;
 import com.example.security.validator.PasswordValidator;
 import com.example.security.service.LoginAttemptService;
+import com.example.security.service.CaptchaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
@@ -62,12 +63,20 @@ public class AuthController {
     @Autowired
     private LoginAttemptService loginAttemptService;
 
+    @Autowired
+    private CaptchaService captchaService;
+
     @Operation(summary = "用户登录", description = "使用用户名和密码进行登录")
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
             HttpServletRequest request) {
         String ip = request.getRemoteAddr();
         logger.info("尝试登录用户: {}", loginRequest.getUsername());
+
+        if (!captchaService.validateCaptcha(request.getSession().getId(), loginRequest.getCaptcha())) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse(false, "验证码错误或已过期"));
+        }
 
         if (loginAttemptService.isBlocked(ip)) {
             logger.warn("IP {} 已被锁定", ip);
