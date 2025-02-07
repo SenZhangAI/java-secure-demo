@@ -121,28 +121,64 @@ http://localhost:8080/swagger-ui.html
 
 ### 测试接口
 
-1. 注册新用户
+1. 获取验证码
+
+```bash
+# 获取验证码图片（返回base64编码的图片数据）
+curl -X GET http://localhost:8080/api/captcha
+
+# 返回示例：
+{
+    "success": true,
+    "message": "获取验证码成功",
+    "data": "data:image/png;base64,/9j/4AAQSkZJRg..."  # 这是一个base64编码的图片
+}
+
+# 在浏览器中查看验证码
+# 1. 复制返回的 data 字段值
+# 2. 在浏览器新标签页粘贴即可看到验证码图片
+```
+
+2. 注册新用户
 
 ```bash
 curl -X POST http://localhost:8080/api/auth/signup \
   -H "Content-Type: application/json" \
-  -d '{"username":"testuser","email":"test@example.com","password":"password123"}'
+  -d '{
+    "username":"testuser",
+    "email":"test@example.com",
+    "password":"Password@123"
+  }'
 ```
 
-2. 用户登录
+3. 用户登录（需要验证码）
 
 ```bash
+# 1. 先获取验证码（使用上面的验证码接口）
+# 2. 查看验证码图片并记住验证码内容
+# 3. 使用验证码进行登录
 curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"testuser","password":"password123"}'
+  -d '{
+    "username":"testuser",
+    "password":"Password@123",
+    "captcha":"1234"  # 这里填写你看到的验证码内容
+  }'
 ```
 
-3. 获取用户信息（需要 token）
+4. 获取用户信息（需要 token）
 
 ```bash
 curl -X GET http://localhost:8080/api/auth/user/info \
   -H "Authorization: Bearer {your_token}"
 ```
+
+### 验证码说明
+
+-   验证码有效期为 5 分钟
+-   验证码区分大小写
+-   验证码使用后立即失效
+-   如果输入错误的验证码，需要重新获取新的验证码
 
 ## 开发说明
 
