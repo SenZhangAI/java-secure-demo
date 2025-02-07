@@ -387,10 +387,133 @@ public class User {
 
 ### 待实现
 
-1. 定期安全扫描
-    - [ ] 代码质量扫描
-    - [ ] 安全漏洞扫描
-    - [ ] 渗透测试
+1. GitHub 安全集成
+
+    a. GitHub Actions 集成
+
+    - [ ] 配置 CI/CD 工作流
+        - 添加 maven.yml 工作流配置
+        - 实现自动构建和测试
+        - 配置依赖缓存
+    - [ ] 安全检查工作流
+        - 集成 OWASP 依赖检查
+        - 运行单元测试和集成测试
+        - 生成测试覆盖率报告
+    - [ ] 自动化部署流程
+        - 配置环境区分
+        - 实现自动版本管理
+        - 设置部署审批流程
+
+    b. GitHub Security 功能启用
+
+    - [ ] Dependabot 配置
+        - 启用依赖版本更新
+        - 配置自动创建 PR
+        - 设置更新规则和时间
+    - [ ] Code Scanning 配置
+        - 启用 CodeQL 分析
+        - 配置自定义扫描规则
+        - 设置安全警报通知
+    - [ ] Secret Scanning
+        - 启用密钥检测
+        - 配置自动撤销
+        - 设置通知机制
+
+    c. 安全监控和报告
+
+    - [ ] Security Overview 配置
+        - 监控安全状态
+        - 跟踪修复进度
+        - 生成安全报告
+    - [ ] Security Advisories
+        - 创建安全公告模板
+        - 配置响应流程
+        - 建立修复时间线
+
+2. 实施计划
+
+    a. 第一阶段：GitHub Actions 配置（1 周）
+
+    ```yaml
+    # .github/workflows/maven.yml
+    name: Java CI with Maven
+
+    on:
+        push:
+            branches: [main]
+        pull_request:
+            branches: [main]
+
+    jobs:
+        build:
+            runs-on: ubuntu-latest
+            steps:
+                - uses: actions/checkout@v3
+                - name: Set up JDK 8
+                  uses: actions/setup-java@v3
+                  with:
+                      java-version: "8"
+                      distribution: "temurin"
+                      cache: maven
+                - name: Build with Maven
+                  run: mvn -B package --file pom.xml
+                - name: Run Security Check
+                  run: ./security-check.sh
+    ```
+
+    b. 第二阶段：安全配置（1 周）
+
+    ```yaml
+    # .github/dependabot.yml
+    version: 2
+    updates:
+        - package-ecosystem: "maven"
+          directory: "/"
+          schedule:
+              interval: "weekly"
+          ignore:
+              - dependency-name: "org.springframework.boot"
+                versions: ["3.x"]
+    ```
+
+    c. 第三阶段：监控配置（1 周）
+
+    - 配置 Security Overview 面板
+    - 设置通知规则
+    - 建立响应流程
+
+3. 监控指标
+
+    a. CI/CD 指标
+
+    - 构建成功率 > 95%
+    - 测试覆盖率 > 80%
+    - 部署成功率 > 99%
+
+    b. 安全扫描指标
+
+    - Dependabot 警报响应时间 < 24h
+    - CodeQL 警报误报率 < 5%
+    - Secret 泄露响应时间 < 1h
+
+4. 相关文件结构
+
+    ```bash
+    .github/
+    ├── workflows/
+    │   ├── maven.yml              # CI/CD 工作流配置
+    │   └── security-scan.yml      # 安全扫描工作流
+    ├── dependabot.yml             # Dependabot 配置
+    └── codeql/
+        └── codeql-config.yml      # CodeQL 配置
+    ```
+
+5. 注意事项
+    - 所有密钥和敏感信息使用 GitHub Secrets 管理
+    - 主分支必须启用保护规则
+    - PR 必须通过所有检查才能合并
+    - 定期审查安全报告和警报
+    - 建立安全问题响应流程
 
 ### 错误处理说明
 
