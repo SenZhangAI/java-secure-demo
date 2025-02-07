@@ -58,6 +58,12 @@ jwt:
     expiration: 86400000 # 24小时
 
 logging:
+    file:
+        name: logs/application.log
+        audit: logs/audit.log
+    pattern:
+        file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+        audit: "%d{yyyy-MM-dd HH:mm:ss.SSS}|%msg%n"
     level:
         root: INFO
         com.example.security: INFO
@@ -67,3 +73,4 @@ logging:
         org.hibernate.type.descriptor.sql: INFO
         # 生产环境建议使用 WARN 或 ERROR 级别
         com.example.security.converter.EncryptedAttributeConverter: WARN
+        AUDIT_LOG: INFO

@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import com.example.security.annotation.AuditLog;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -68,6 +69,7 @@ public class AuthController {
 
     @Operation(summary = "用户登录", description = "使用用户名和密码进行登录")
     @PostMapping("/login")
+    @AuditLog
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
             HttpServletRequest request) {
         String ip = request.getRemoteAddr();
@@ -126,6 +128,7 @@ public class AuthController {
 
     @Operation(summary = "用户注册", description = "注册新用户")
     @PostMapping("/signup")
+    @AuditLog
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         logger.info("开始注册用户: {}", signUpRequest.getUsername());
 
