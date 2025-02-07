@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import com.example.security.annotation.Sensitive;
 import com.example.security.annotation.SensitiveStrategy;
+import com.example.security.converter.EncryptedAttributeConverter;
 
 @Data
 @Entity
@@ -21,14 +22,17 @@ public class User {
     private String username;
 
     @Column(unique = true)
+    @Convert(converter = EncryptedAttributeConverter.class)
     @Sensitive(strategy = SensitiveStrategy.EMAIL)
     private String email;
 
     @Column(name = "phone")
+    @Convert(converter = EncryptedAttributeConverter.class)
     @Sensitive(strategy = SensitiveStrategy.PHONE)
     private String phone;
 
     @Column(name = "id_card")
+    @Convert(converter = EncryptedAttributeConverter.class)
     @Sensitive(strategy = SensitiveStrategy.ID_CARD)
     private String idCard;
 

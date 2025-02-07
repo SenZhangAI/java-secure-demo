@@ -56,3 +56,7 @@ spring:
 jwt:
     secret: your-secret-key
     expiration: 86400000 # 24小时
+
+app:
+    encryption:
+        key: your-32-byte-encryption-key-here123456
