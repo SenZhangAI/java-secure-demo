@@ -63,24 +63,24 @@ public class AuthController {
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
             HttpServletRequest request) {
         String ip = request.getRemoteAddr();
-        
+
         if (loginAttemptService.isBlocked(ip)) {
             return ResponseEntity.badRequest()
-                .body(new ApiResponse(false, "账户已被锁定，请1小时后重试"));
+                    .body(new ApiResponse(false, "账户已被锁定，请1小时后重试"));
         }
 
         try {
             Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                    loginRequest.getUsername(),
-                    loginRequest.getPassword()));
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()));
 
             User user = userRepository.findByUsername(loginRequest.getUsername())
-                .orElseThrow(() -> new RuntimeException("用户不存在"));
+                    .orElseThrow(() -> new RuntimeException("用户不存在"));
 
             if (user.isPasswordExpired()) {
                 return ResponseEntity.badRequest()
-                    .body(new ApiResponse(false, "密码已过期，请修改密码"));
+                        .body(new ApiResponse(false, "密码已过期，请修改密码"));
             }
 
             loginAttemptService.loginSucceeded(ip);
@@ -120,7 +120,7 @@ public class AuthController {
         // 验证密码强度
         if (!passwordValidator.isValid(signUpRequest.getPassword())) {
             return ResponseEntity.badRequest()
-                .body(new ApiResponse(false, "密码不符合要求: " + passwordValidator.getPasswordRequirements()));
+                    .body(new ApiResponse(false, "密码不符合要求: " + passwordValidator.getPasswordRequirements()));
         }
 
         User user = new User();
