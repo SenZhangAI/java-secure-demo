@@ -1,5 +1,7 @@
 package com.example.security.converter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
@@ -23,14 +25,26 @@ import java.util.Base64;
  */
 @Converter(autoApply = false)
 public class EncryptedAttributeConverter implements AttributeConverter<String, String> {
-
+    private static final Logger logger = LoggerFactory.getLogger(EncryptedAttributeConverter.class);
+    
     private static final String ENCRYPTION_KEY = "your32bytesecretkeyyour32bytesecret";
     private static final String ALGORITHM = "AES/GCM/NoPadding";
     private static final int GCM_IV_LENGTH = 12;
     private static final int GCM_TAG_LENGTH = 16;
 
-    private static final SecretKey SECRET_KEY = new SecretKeySpec(
-            ENCRYPTION_KEY.getBytes(StandardCharsets.UTF_8), "AES");
+    private final SecretKey secretKey;
+
+    public EncryptedAttributeConverter() {
+        try {
+            this.secretKey = new SecretKeySpec(
+                ENCRYPTION_KEY.getBytes(StandardCharsets.UTF_8), "AES");
+            // 验证密钥是否可用
+            Cipher.getInstance(ALGORITHM);
+        } catch (Exception e) {
+            logger.error("初始化加密转换器失败", e);
+            throw new RuntimeException("初始化加密转换器失败", e);
+        }
+    }
 
     @Override
     public String convertToDatabaseColumn(String attribute) {
@@ -38,22 +52,26 @@ public class EncryptedAttributeConverter implements AttributeConverter<String, S
             return null;
         }
         try {
+            logger.debug("开始加密数据: {}", attribute);
+            
             byte[] iv = new byte[GCM_IV_LENGTH];
             new SecureRandom().nextBytes(iv);
-
+            
             Cipher cipher = Cipher.getInstance(ALGORITHM);
             GCMParameterSpec parameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, iv);
-            cipher.init(Cipher.ENCRYPT_MODE, SECRET_KEY, parameterSpec);
-
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec);
+            
             byte[] encryptedData = cipher.doFinal(attribute.getBytes(StandardCharsets.UTF_8));
-
-            // 将 IV 和加密数据组合
+            
             byte[] combined = new byte[iv.length + encryptedData.length];
             System.arraycopy(iv, 0, combined, 0, iv.length);
             System.arraycopy(encryptedData, 0, combined, iv.length, encryptedData.length);
-
-            return Base64.getEncoder().encodeToString(combined);
+            
+            String result = Base64.getEncoder().encodeToString(combined);
+            logger.debug("加密完成，加密后长度: {}", result.length());
+            return result;
         } catch (Exception e) {
+            logger.error("加密失败: {}", e.getMessage(), e);
             throw new RuntimeException("加密失败: " + e.getMessage(), e);
         }
     }
@@ -64,23 +82,26 @@ public class EncryptedAttributeConverter implements AttributeConverter<String, S
             return null;
         }
         try {
+            logger.debug("开始解密数据，加密数据长度: {}", dbData.length());
+            
             byte[] decoded = Base64.getDecoder().decode(dbData);
-
-            // 提取 IV
+            
             byte[] iv = new byte[GCM_IV_LENGTH];
             System.arraycopy(decoded, 0, iv, 0, GCM_IV_LENGTH);
-
-            // 提取加密数据
+            
             byte[] encryptedData = new byte[decoded.length - GCM_IV_LENGTH];
             System.arraycopy(decoded, GCM_IV_LENGTH, encryptedData, 0, encryptedData.length);
-
+            
             Cipher cipher = Cipher.getInstance(ALGORITHM);
             GCMParameterSpec parameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, iv);
-            cipher.init(Cipher.DECRYPT_MODE, SECRET_KEY, parameterSpec);
-
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, parameterSpec);
+            
             byte[] decryptedData = cipher.doFinal(encryptedData);
-            return new String(decryptedData, StandardCharsets.UTF_8);
+            String result = new String(decryptedData, StandardCharsets.UTF_8);
+            logger.debug("解密完成");
+            return result;
         } catch (Exception e) {
+            logger.error("解密失败: {}", e.getMessage(), e);
             throw new RuntimeException("解密失败: " + e.getMessage(), e);
         }
     }

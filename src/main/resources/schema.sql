@@ -11,10 +11,10 @@ CREATE TABLE IF NOT EXISTS roles (
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
-    email VARCHAR(120) NOT NULL,
+    email VARCHAR(255) NOT NULL,
     password VARCHAR(120) NOT NULL,
-    phone VARCHAR(255) DEFAULT NULL,
-    id_card VARCHAR(255) DEFAULT NULL,
+    phone VARCHAR(255),
+    id_card VARCHAR(255),
     password_last_changed TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     password_expired BOOLEAN DEFAULT FALSE,
     UNIQUE INDEX idx_user_username (username),
