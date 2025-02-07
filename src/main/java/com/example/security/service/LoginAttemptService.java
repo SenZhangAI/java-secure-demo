@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nonnull;
 
 @Service
 public class LoginAttemptService {
@@ -17,8 +18,9 @@ public class LoginAttemptService {
         attemptsCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(1, TimeUnit.HOURS)
                 .build(new CacheLoader<String, Integer>() {
+                    @Nonnull
                     @Override
-                    public Integer load(String key) {
+                    public Integer load(@Nonnull String key) {
                         return 0;
                     }
                 });

@@ -7,6 +7,7 @@ import com.google.common.util.concurrent.RateLimiter;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nonnull;
 
 @Service
 public class RateLimitService {
@@ -18,8 +19,9 @@ public class RateLimitService {
         ipRateLimiters = CacheBuilder.newBuilder()
                 .expireAfterWrite(1, TimeUnit.HOURS)
                 .build(new CacheLoader<String, RateLimiter>() {
+                    @Nonnull
                     @Override
-                    public RateLimiter load(String key) {
+                    public RateLimiter load(@Nonnull String key) {
                         return RateLimiter.create(MAX_REQUESTS_PER_SECOND);
                     }
                 });

@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.springframework.stereotype.Service;
+import javax.annotation.Nonnull;
 
 import java.util.concurrent.TimeUnit;
 
@@ -16,8 +17,9 @@ public class CaptchaService {
         captchaCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(5, TimeUnit.MINUTES)
                 .build(new CacheLoader<String, String>() {
+                    @Nonnull
                     @Override
-                    public String load(String key) {
+                    public String load(@Nonnull String key) {
                         return "";
                     }
                 });

@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class SensitiveSerializer extends JsonSerializer<String> implements ContextualSerializer {
 
