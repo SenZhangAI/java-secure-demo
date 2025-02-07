@@ -118,38 +118,48 @@ public class AuthController {
     @Operation(summary = "用户注册", description = "注册新用户")
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+        logger.info("开始注册用户: {}", signUpRequest.getUsername());
+
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity
-                    .badRequest()
+            logger.warn("用户名已存在: {}", signUpRequest.getUsername());
+            return ResponseEntity.badRequest()
                     .body(new ApiResponse(false, "用户名已被使用"));
         }
 
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
+            logger.warn("邮箱已存在: {}", signUpRequest.getEmail());
+            return ResponseEntity.badRequest()
                     .body(new ApiResponse(false, "邮箱已被使用"));
         }
 
         // 验证密码强度
         if (!passwordValidator.isValid(signUpRequest.getPassword())) {
+            logger.warn("密码强度不足");
             return ResponseEntity.badRequest()
                     .body(new ApiResponse(false, "密码不符合要求: " + passwordValidator.getPasswordRequirements()));
         }
 
-        User user = new User();
-        user.setUsername(signUpRequest.getUsername());
-        user.setEmail(signUpRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+        try {
+            User user = new User();
+            user.setUsername(signUpRequest.getUsername());
+            user.setEmail(signUpRequest.getEmail());
+            user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
 
-        Set<Role> roles = new HashSet<>();
-        Role userRole = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new RuntimeException("未找到默认角色"));
-        roles.add(userRole);
-        user.setRoles(roles);
+            Set<Role> roles = new HashSet<>();
+            Role userRole = roleRepository.findByName("ROLE_USER")
+                    .orElseThrow(() -> new RuntimeException("未找到默认角色"));
+            roles.add(userRole);
+            user.setRoles(roles);
 
-        userRepository.save(user);
+            userRepository.save(user);
+            logger.info("用户注册成功: {}", user.getUsername());
 
-        return ResponseEntity.ok(new ApiResponse(true, "用户注册成功"));
+            return ResponseEntity.ok(new ApiResponse(true, "用户注册成功"));
+        } catch (Exception e) {
+            logger.error("用户注册失败: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse(false, "注册失败: " + e.getMessage()));
+        }
     }
 
     @Operation(summary = "获取用户信息", description = "获取当前登录用户的详细信息")
