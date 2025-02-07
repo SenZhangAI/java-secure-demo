@@ -324,6 +324,20 @@ mvn test
         -   授权异常处理
         -   参数验证异常处理
         -   业务异常处理
+-   [x] 依赖包安全检查
+    -   [x] Maven 依赖版本检查
+        -   使用 versions-maven-plugin 检查更新
+        -   自定义版本规则配置
+        -   忽略不稳定版本
+    -   [x] 已知漏洞扫描
+        -   集成 OWASP Dependency-Check
+        -   自定义 CVSS 评分阈值
+        -   HTML 和 JSON 格式报告
+        -   支持漏洞抑制配置
+    -   [x] 自动化检查脚本
+        -   一键执行所有安全检查
+        -   生成详细报告
+        -   支持 CI/CD 集成
 
 ### 敏感数据保护说明
 
@@ -373,12 +387,7 @@ public class User {
 
 ### 待实现
 
-1. 依赖包安全检查
-
-    - [ ] Maven 依赖版本检查
-    - [ ] 已知漏洞扫描
-
-2. 定期安全扫描
+1. 定期安全扫描
     - [ ] 代码质量扫描
     - [ ] 安全漏洞扫描
     - [ ] 渗透测试
@@ -437,30 +446,33 @@ curl -X POST http://localhost:8080/api/files/upload \
   -F "file=@example.jpg"
 ```
 
-### 下一步计划
+### 依赖安全检查说明
 
-1. 文件上传模块
+1. 执行检查
 
-    - 实现基础的文件上传功能
-    - 添加文件类型白名单
-    - 实现文件大小限制
-    - 配置安全的存储路径
+```bash
+# 赋予脚本执行权限
+chmod +x security-check.sh
 
-2. HTTP 安全配置
+# 运行安全检查
+./security-check.sh
+```
 
-    - 添加安全响应头
-    - 配置 SSL/TLS
-    - 实现 CSP 策略
+2. 检查内容
 
-3. 错误处理
+-   依赖版本更新检查
+-   插件版本更新检查
+-   OWASP 漏洞扫描
+-   生成安全报告
 
-    - 自定义错误页面
-    - 统一异常处理
-    - 敏感信息过滤
+3. 配置说明
 
-4. 安全监控
-    - 集成 Spring Actuator
-    - 添加安全审计
-    - 实现监控告警
+-   failBuildOnCVSS: 7 (CVSS 评分高于 7 时构建失败)
+-   支持 HTML 和 JSON 格式报告
+-   可通过 suppressions.xml 配置漏洞抑制规则
+-   可通过 version-rules.xml 配置版本检查规则
 
-每个里程碑完成后，将在此更新进度。
+4. 报告位置
+
+-   依赖检查报告：target/dependency-check-report.html
+-   版本检查报告：target/site/dependency-updates-report.html

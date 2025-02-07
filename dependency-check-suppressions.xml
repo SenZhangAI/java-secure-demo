@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <!-- 示例：如果有误报或已确认安全的漏洞，可以在这里添加抑制规则 -->
+    <!--
+    <suppress>
+        <notes>说明抑制原因</notes>
+        <gav>group:artifact:version</gav>
+        <cve>CVE-XXXX-YYYY</cve>
+    </suppress>
+    -->
+</suppressions> 
