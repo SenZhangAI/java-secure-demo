@@ -9,6 +9,8 @@ import com.example.security.entity.User;
 import com.example.security.repository.RoleRepository;
 import com.example.security.repository.UserRepository;
 import com.example.security.security.JwtTokenProvider;
+import com.example.security.validator.PasswordValidator;
+import com.example.security.service.LoginAttemptService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.AuthenticationException;
+import javax.servlet.http.HttpServletRequest;
 
 import javax.validation.Valid;
 import java.util.HashSet;
@@ -48,27 +52,54 @@ public class AuthController {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
+    @Autowired
+    private PasswordValidator passwordValidator;
+
+    @Autowired
+    private LoginAttemptService loginAttemptService;
+
     @Operation(summary = "用户登录", description = "使用用户名和密码进行登录")
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
+            HttpServletRequest request) {
+        String ip = request.getRemoteAddr();
+        
+        if (loginAttemptService.isBlocked(ip)) {
+            return ResponseEntity.badRequest()
+                .body(new ApiResponse(false, "账户已被锁定，请1小时后重试"));
+        }
+
+        try {
+            Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()));
+                    loginRequest.getUsername(),
+                    loginRequest.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = tokenProvider.generateToken(authentication);
+            User user = userRepository.findByUsername(loginRequest.getUsername())
+                .orElseThrow(() -> new RuntimeException("用户不存在"));
 
-        User user = userRepository.findByUsername(loginRequest.getUsername()).get();
-        List<String> roles = user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toList());
+            if (user.isPasswordExpired()) {
+                return ResponseEntity.badRequest()
+                    .body(new ApiResponse(false, "密码已过期，请修改密码"));
+            }
 
-        return ResponseEntity.ok(new JwtResponse(jwt,
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                roles));
+            loginAttemptService.loginSucceeded(ip);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = tokenProvider.generateToken(authentication);
+
+            List<String> roles = user.getRoles().stream()
+                    .map(Role::getName)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(new JwtResponse(jwt,
+                    user.getId(),
+                    user.getUsername(),
+                    user.getEmail(),
+                    roles));
+        } catch (AuthenticationException e) {
+            loginAttemptService.loginFailed(ip);
+            throw e;
+        }
     }
 
     @Operation(summary = "用户注册", description = "注册新用户")
@@ -84,6 +115,12 @@ public class AuthController {
             return ResponseEntity
                     .badRequest()
                     .body(new ApiResponse(false, "邮箱已被使用"));
+        }
+
+        // 验证密码强度
+        if (!passwordValidator.isValid(signUpRequest.getPassword())) {
+            return ResponseEntity.badRequest()
+                .body(new ApiResponse(false, "密码不符合要求: " + passwordValidator.getPasswordRequirements()));
         }
 
         User user = new User();
