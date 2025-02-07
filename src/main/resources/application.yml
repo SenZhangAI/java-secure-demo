@@ -59,6 +59,11 @@ jwt:
 
 logging:
     level:
-        com.example.security.converter: DEBUG
-        org.hibernate.SQL: DEBUG
-        org.hibernate.type.descriptor.sql: TRACE
+        root: INFO
+        com.example.security: INFO
+        # 只在开发环境使用 DEBUG 级别
+        # com.example.security.converter: DEBUG
+        org.hibernate.SQL: INFO
+        org.hibernate.type.descriptor.sql: INFO
+        # 生产环境建议使用 WARN 或 ERROR 级别
+        com.example.security.converter.EncryptedAttributeConverter: WARN
