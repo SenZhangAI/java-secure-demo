@@ -17,25 +17,26 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     @Sensitive(strategy = SensitiveStrategy.USERNAME)
     private String username;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     @Convert(converter = EncryptedAttributeConverter.class)
     @Sensitive(strategy = SensitiveStrategy.EMAIL)
     private String email;
 
-    @Column(name = "phone")
+    @Column(name = "phone", nullable = true)
     @Convert(converter = EncryptedAttributeConverter.class)
     @Sensitive(strategy = SensitiveStrategy.PHONE)
     private String phone;
 
-    @Column(name = "id_card")
+    @Column(name = "id_card", nullable = true)
     @Convert(converter = EncryptedAttributeConverter.class)
     @Sensitive(strategy = SensitiveStrategy.ID_CARD)
     private String idCard;
 
+    @Column(nullable = false)
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
