@@ -45,19 +45,6 @@
     - application.yml 配置文件
     - 初始化 SQL 脚本
 
-## 测试用例
-
-1. 认证测试
-
-    - 用户注册测试
-    - 用户登录测试
-    - Token 生成测试
-
-2. 权限测试
-    - 公共接口测试
-    - 用户接口测试
-    - 管理员接口测试
-
 # Spring Security Demo
 
 基于 Spring Boot 和 JWT 的认证授权系统示例。
