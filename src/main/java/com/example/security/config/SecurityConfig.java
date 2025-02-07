@@ -22,6 +22,8 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.example.security.service.RateLimitService;
 import com.example.security.filter.RateLimitFilter;
+import org.springframework.security.web.header.HeaderWriter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -40,6 +42,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private HeaderWriter securityHeadersWriter;
+
+    @Autowired
+    private HeaderWriter apiHeadersWriter;
+
+    @Autowired
+    private CorsConfigurationSource corsConfigurationSource;
+
     @Bean
     public JwtAuthenticationFilter authenticationJwtTokenFilter() {
         return new JwtAuthenticationFilter();
@@ -48,18 +59,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .cors()
+                .configurationSource(corsConfigurationSource)
+                .and()
                 .csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .ignoringAntMatchers("/api/auth/**")
                 .and()
                 .headers()
+                .addHeaderWriter(securityHeadersWriter)
+                .addHeaderWriter(apiHeadersWriter)
+                .frameOptions().deny()
                 .xssProtection()
                 .and()
                 .contentSecurityPolicy("default-src 'self'")
                 .and()
-                .frameOptions().deny()
-                .and()
-                .cors()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
