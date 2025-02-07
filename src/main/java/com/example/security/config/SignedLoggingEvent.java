@@ -79,7 +79,7 @@ public class SignedLoggingEvent implements ILoggingEvent {
 
     @Override
     public Map<String, String> getMdc() {
-        return event.getMdc();
+        return getMDCPropertyMap();
     }
 
     @Override
